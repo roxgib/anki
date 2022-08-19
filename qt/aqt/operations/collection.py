@@ -15,7 +15,7 @@ from anki.types import assert_exhaustive
 from aqt import gui_hooks
 from aqt.operations import CollectionOp
 from aqt.qt import QWidget
-from aqt.utils import showInfo, showWarning, tooltip, tr
+from aqt.utils import showWarning, tooltip, tr
 
 
 def undo(*, parent: QWidget) -> None:
@@ -60,7 +60,7 @@ def _legacy_undo(*, parent: QWidget) -> None:
 
     if result is None:
         # should not happen
-        showInfo("nothing to undo", parent=parent)
+        tooltip("nothing to undo", parent=parent)
         mw.update_undo_actions()
         return
 
