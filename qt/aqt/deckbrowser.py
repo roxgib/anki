@@ -25,7 +25,7 @@ from aqt.operations.deck import (
 from aqt.qt import *
 from aqt.sound import av_player
 from aqt.toolbar import BottomBar
-from aqt.utils import getOnlyText, openLink, shortcut, showInfo, tr
+from aqt.utils import getOnlyText, openLink, shortcut, show_info, tr
 
 
 class DeckBrowserBottomBar:
@@ -376,5 +376,5 @@ class DeckBrowser:
         self.mw.col.mod_schema(check=True)
         self.mw.col.upgrade_to_v2_scheduler()
 
-        showInfo(tr.scheduling_update_done())
+        show_info(tr.scheduling_update_done())
         self.refresh()

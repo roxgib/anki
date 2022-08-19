@@ -21,7 +21,7 @@ from aqt.utils import (
     restoreGeom,
     saveGeom,
     shortcut,
-    showInfo,
+    show_info,
     tr,
 )
 
@@ -158,7 +158,7 @@ class StudyDeck(QDialog):
     def accept(self) -> None:
         row = self.form.list.currentRow()
         if row < 0:
-            showInfo(tr.decks_please_select_something())
+            show_info(tr.decks_please_select_something())
             return
         self.name = self.names[self.form.list.currentRow()]
         self.accept_with_callback()

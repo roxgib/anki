@@ -21,7 +21,7 @@ from aqt.utils import (
     openHelp,
     restoreGeom,
     saveGeom,
-    showInfo,
+    show_info,
     showWarning,
     tooltip,
     tr,
@@ -140,7 +140,9 @@ class DeckConf(QDialog):
 
     def remGroup(self) -> None:
         if int(self.conf["id"]) == 1:
-            showInfo(tr.scheduling_the_default_configuration_cant_be_removed(), self)
+            show_info(
+                tr.scheduling_the_default_configuration_cant_be_removed(), parent=self
+            )
         else:
             gui_hooks.deck_conf_will_remove_config(self, self.deck, self.conf)
             self.mw.col.mod_schema(check=True)

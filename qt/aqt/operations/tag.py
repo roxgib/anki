@@ -9,7 +9,7 @@ from anki.collection import OpChanges, OpChangesWithCount
 from anki.notes import NoteId
 from aqt import QWidget
 from aqt.operations import CollectionOp
-from aqt.utils import showInfo, tooltip, tr
+from aqt.utils import show_info, tooltip, tr
 
 
 def add_tags_to_notes(
@@ -56,7 +56,7 @@ def rename_tag(
         if out.count:
             tooltip(tr.browsing_notes_updated(count=out.count), parent=parent)
         else:
-            showInfo(tr.browsing_tag_rename_warning_empty(), parent=parent)
+            show_info(tr.browsing_tag_rename_warning_empty(), parent=parent)
 
     return CollectionOp(
         parent,

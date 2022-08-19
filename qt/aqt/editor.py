@@ -50,7 +50,7 @@ from aqt.utils import (
     restoreGeom,
     saveGeom,
     shortcut,
-    showInfo,
+    show_info,
     showWarning,
     tooltip,
     tr,
@@ -1041,7 +1041,7 @@ require("anki/ui").loaded.then(() => require("anki/NoteEditor").instances[0].too
             if self.addMode:
                 tooltip(tr.editing_warning_cloze_deletions_will_not_work())
             else:
-                showInfo(tr.editing_to_make_a_cloze_deletion_on())
+                show_info(tr.editing_to_make_a_cloze_deletion_on())
                 return
         # find the highest existing cloze
         highest = 0
