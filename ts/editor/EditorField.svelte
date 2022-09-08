@@ -14,6 +14,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
         direction: "ltr" | "rtl";
         plainText: boolean;
         description: string;
+        collapsed: boolean;
     }
 
     export interface EditorFieldAPI {
@@ -54,6 +55,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
     export let content: Writable<string>;
     export let field: FieldData;
     export let collapsed = false;
+    export let flipInputs = false;
 
     const directionStore = writable<"ltr" | "rtl">();
     setContext(directionKey, directionStore);
@@ -83,28 +85,34 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
     onDestroy(() => api?.destroy());
 </script>
 
-<div
-    use:elementResolve
-    class="editor-field"
-    on:focusin
-    on:focusout
-    on:click={() => editingArea.focus?.()}
-    on:mouseenter
-    on:mouseleave
->
-    <slot name="field-label" />
+<slot name="field-label" />
 
-    <Collapsible {collapsed}>
+<Collapsible collapse={collapsed} let:collapsed={hidden}>
+    <div
+        use:elementResolve
+        class="editor-field"
+        on:focusin
+        on:focusout
+        on:mouseenter
+        on:mouseleave
+        {hidden}
+    >
         <EditingArea
             {content}
             fontFamily={field.fontFamily}
             fontSize={field.fontSize}
             api={editingArea}
         >
-            <slot name="editing-inputs" />
+            {#if flipInputs}
+                <slot name="plain-text-input" />
+                <slot name="rich-text-input" />
+            {:else}
+                <slot name="rich-text-input" />
+                <slot name="plain-text-input" />
+            {/if}
         </EditingArea>
-    </Collapsible>
-</div>
+    </div>
+</Collapsible>
 
 <style lang="scss">
     .editor-field {

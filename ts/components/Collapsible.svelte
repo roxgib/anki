@@ -3,98 +3,53 @@ Copyright: Ankitects Pty Ltd and contributors
 License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 -->
 <script lang="ts">
-    import { promiseWithResolver } from "../lib/promise";
+    import { cubicOut } from "svelte/easing";
+    import { tweened } from "svelte/motion";
 
-    export let id: string | undefined = undefined;
-    let className: string = "";
-    export { className as class };
+    import { removeStyleProperties } from "../lib/styling";
 
-    export let collapsed = false;
+    export let duration = 300;
 
-    const [outerPromise, outerResolve] = promiseWithResolver<HTMLElement>();
-    const [innerPromise, innerResolve] = promiseWithResolver<HTMLElement>();
+    export let collapse = false;
+    let collapsed = false;
 
-    let isCollapsed = false;
+    const size = tweened<number>(undefined, {
+        duration,
+        easing: cubicOut,
+    });
 
-    let style: string;
-    function setStyle(height: number, duration: number) {
-        style = `--collapse-height: -${height}px; --duration: ${duration}ms`;
-    }
-
-    /* The following two functions use synchronous DOM-manipulation,
-    because Editor field inputs would lose focus when using tick() */
-
-    function getRequiredHeight(el: HTMLElement): number {
-        el.style.setProperty("position", "absolute");
-        el.style.setProperty("visibility", "hidden");
-        el.removeAttribute("hidden");
-
-        const height = el.clientHeight;
-
-        el.setAttribute("hidden", "");
-        el.style.removeProperty("position");
-        el.style.removeProperty("visibility");
-
-        return height;
-    }
-
-    async function transition(collapse: boolean) {
-        const outer = await outerPromise;
-        const inner = await innerPromise;
-
-        outer.style.setProperty("overflow", "hidden");
-        isCollapsed = true;
-
-        const height = collapse ? inner.clientHeight : getRequiredHeight(inner);
-        const duration = Math.sqrt(height * 80);
-
-        setStyle(height, duration);
-
-        if (!collapse) {
-            inner.removeAttribute("hidden");
-            isCollapsed = false;
+    function doCollapse(collapse: boolean): void {
+        if (collapse) {
+            size.set(0);
+        } else {
+            collapsed = false;
+            size.set(1, { duration: 0 });
         }
-
-        inner.addEventListener(
-            "transitionend",
-            () => {
-                inner.toggleAttribute("hidden", collapse);
-                outer.style.removeProperty("overflow");
-            },
-            { once: true },
-        );
     }
 
-    /* prevent transition on mount for performance reasons */
-    let blockTransition = true;
+    $: doCollapse(collapse);
 
-    $: if (blockTransition) {
-        blockTransition = false;
-    } else {
-        transition(collapsed);
+    let collapsibleElement: HTMLElement;
+    let clientHeight: number;
+
+    function updateHeight(percentage: number): void {
+        collapsibleElement.style.overflow = "hidden";
+
+        if (percentage === 1) {
+            removeStyleProperties(collapsibleElement, "height", "overflow");
+        } else if (percentage === 0) {
+            collapsed = true;
+            removeStyleProperties(collapsibleElement, "height", "overflow");
+        } else {
+            collapsibleElement.style.height = `${percentage * clientHeight}px`;
+        }
+    }
+
+    $: if (collapsibleElement) {
+        updateHeight($size);
     }
 </script>
 
-<div {id} class="collapsible-container {className}" use:outerResolve>
-    <div
-        class="collapsible-inner"
-        class:collapsed={isCollapsed}
-        use:innerResolve
-        {style}
-    >
-        <slot />
-    </div>
+<div bind:this={collapsibleElement} class="collapsible" bind:clientHeight>
+    <slot {collapsed} />
 </div>
-
-<style lang="scss">
-    .collapsible-container {
-        position: relative;
-    }
-    .collapsible-inner {
-        transition: margin-top var(--duration) ease-in;
-
-        &.collapsed {
-            margin-top: var(--collapse-height);
-        }
-    }
-</style>

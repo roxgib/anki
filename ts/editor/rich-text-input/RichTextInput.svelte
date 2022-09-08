@@ -77,7 +77,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
     import RichTextStyles from "./RichTextStyles.svelte";
     import { fragmentToStored, storedToFragment } from "./transform";
 
-    export let hidden: boolean;
+    export let hidden = false;
 
     const { focusedInput } = noteEditorContext.get();
     const { content, editingInputs } = editingAreaContext.get();
@@ -211,7 +211,7 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
     setupLifecycleHooks(api);
 </script>
 
-<div class="rich-text-input" on:focusin={setFocus} on:focusout={removeFocus}>
+<div class="rich-text-input" on:focusin={setFocus} on:focusout={removeFocus} {hidden}>
     <RichTextStyles
         color={$pageTheme.isDark ? "white" : "black"}
         fontFamily={$fontFamily}
@@ -244,10 +244,6 @@ License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 <style lang="scss">
     .rich-text-input {
         position: relative;
-        padding: 6px;
-    }
-
-    .hidden {
-        display: none;
+        margin: 6px;
     }
 </style>
